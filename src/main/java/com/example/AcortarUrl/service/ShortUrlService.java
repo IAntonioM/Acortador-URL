@@ -7,7 +7,9 @@ import com.example.AcortarUrl.persistence.entity.ShortUrl;
 import com.example.AcortarUrl.persistence.repository.ShortUrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -41,5 +43,17 @@ public class ShortUrlService {
         ShortUrl shortUrl = shortUrlMapper.toShortUrl(request);
         ShortUrl saved = shortUrlRepository.save(shortUrl);
         return shortUrlMapper.toShortUrlResponse(saved,urlHost);
+    }
+
+    public void delete(Long id) {
+        shortUrlRepository.deleteById(id);
+    }
+
+    public ShortUrlResponse update(Long id, ShortUrlRequest shortUrlRequest) {
+        ShortUrl existingUrl = shortUrlRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found with id: " + id));
+        existingUrl.setUrl(shortUrlRequest.getUrl());
+        ShortUrl updatedUrl = shortUrlRepository.save(existingUrl);
+        return shortUrlMapper.toShortUrlResponse(updatedUrl, urlHost);
     }
 }

@@ -33,5 +33,16 @@ public class ShortUrlController {
         return ResponseEntity.created(URI.create(url.getShortUrl())).body(url);
 
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarAcortadorUrl(@PathVariable Long id) {
+        shortUrlService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ShortUrlResponse> editarAcortadorUrl(@PathVariable Long id,
+                                                               @RequestBody ShortUrlRequest shortUrlRequest) {
+        ShortUrlResponse url = shortUrlService.update(id, shortUrlRequest);
+        return ResponseEntity.ok(url);
+    }
 
 }
